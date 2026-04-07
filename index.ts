@@ -127,11 +127,42 @@ function move(gameState: GameState): MoveResponse {
     return { move: "down" };
   }
 
-  // Choose a random move from the safe moves
-  const nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+  // Step 4 - Move towards food when health is low
+  const food = gameState.board.food;
+  let nextMove: string;
 
-  // TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-  // food = gameState.board.food;
+  if (gameState.you.health < HEALTH_THRESHOLD && food.length > 0) {
+    const sortedFood = food.slice().sort((a, b) => {
+      const distA = Math.abs(a.x - myHead.x) + Math.abs(a.y - myHead.y);
+      const distB = Math.abs(b.x - myHead.x) + Math.abs(b.y - myHead.y);
+      return distA - distB;
+    });
+
+    const candidatePos = (move: string): { x: number; y: number } => {
+      if (move === "up") return { x: myHead.x, y: myHead.y + 1 };
+      if (move === "down") return { x: myHead.x, y: myHead.y - 1 };
+      if (move === "left") return { x: myHead.x - 1, y: myHead.y };
+      return { x: myHead.x + 1, y: myHead.y };
+    };
+
+    let foodMoves: string[] = [];
+    for (const target of sortedFood) {
+      const targetDist =
+        Math.abs(target.x - myHead.x) + Math.abs(target.y - myHead.y);
+      foodMoves = safeMoves.filter((move) => {
+        const pos = candidatePos(move);
+        return (
+          Math.abs(target.x - pos.x) + Math.abs(target.y - pos.y) < targetDist
+        );
+      });
+      if (foodMoves.length > 0) break;
+    }
+
+    const candidates = foodMoves.length > 0 ? foodMoves : safeMoves;
+    nextMove = candidates[Math.floor(Math.random() * candidates.length)];
+  } else {
+    nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+  }
 
   console.log(`MOVE ${gameState.turn}: ${nextMove}`);
   return { move: nextMove };
