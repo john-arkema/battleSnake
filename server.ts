@@ -10,10 +10,7 @@ export interface BattlesnakeHandlers {
 export default function runServer(handlers: BattlesnakeHandlers) {
   const app = express();
   app.use(express.json());
-  app.use(function (req: Request, res: Response, next: NextFunction) {
-    res.set("Server", "battlesnake/github/starter-snake-typescript");
-    next();
-  });
+
   app.get("/", (req: Request, res: Response) => {
     res.send(handlers.info());
   });
@@ -32,10 +29,15 @@ export default function runServer(handlers: BattlesnakeHandlers) {
     res.send("ok");
   });
 
-  // const host = "0.0.0.0";
+  app.use(function (req: Request, res: Response, next: NextFunction) {
+    res.set("Server", "battlesnake/github/starter-snake-typescript");
+    next();
+  });
+
+  const host = "0.0.0.0";
   const port = parseInt(process.env.PORT || "8000");
 
-  app.listen(port, () => {
-    console.log(`Running Battlesnake at ${port}...`);
+  app.listen(port, host, () => {
+    console.log(`Running Battlesnake at http://${host}:${port}...`);
   });
 }
