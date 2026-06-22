@@ -23,10 +23,10 @@ function info(): InfoResponse {
 
   return {
     apiversion: "1",
-    author: "john-arkema", // TODO: Your Battlesnake Username
-    color: "rgb(14, 239, 231)", // TODO: Choose color
-    head: "beluga", // TODO: Choose head
-    tail: "curled", // TODO: Choose tail
+    author: "john-arkema",
+    color: "rgb(14, 239, 231)",
+    head: "beluga",
+    tail: "curled",
   };
 }
 
